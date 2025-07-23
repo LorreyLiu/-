@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0元特惠点餐系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #ffefba, #ffffff);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #e74c3c;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #3498db;
+            font-size: 1.2rem;
+            margin-top: 15px;
+        }
+        .menu-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .dish-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dish-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .dish-image {
+            width: 100%;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+        }
+        .dish-info {
+            padding: 20px;
+        }
+        .dish-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .dish-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .free-tag {
+            background: #27ae60;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .dish-desc {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .add-to-cart:hover {
+            background: #c0392b;
+        }
+        .cart-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        .cart-title {
+            font-size: 1.6rem;
+            color: #2c3e50;
+        }
+        .total-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .cart-items {
+            margin-bottom: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .item-name {
+            font-size: 1.1rem;
+            color: #34495e;
+        }
+        .item-price {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .remove-item {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .submit-section {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+        .submit-order {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .submit-order:hover {
+            background: #2980b9;
+        }
+        .empty-cart-msg {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .menu-section {
+                grid-template-columns: 1fr;
+            }
+            .dish-card {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>0元特惠点餐系统</h1>
+            <p class="subtitle">美味无限，尽享免费美食</p>
+        </header>
+
+        <div class="menu-section" id="menu-section">
+            <!-- 菜品将通过JavaScript动态添加 -->
+        </div>
+
+        <div class="cart-section">
+            <div class="cart-header">
+                <h2 class="cart-title">您的购物车</h2>
+                <div class="total-price">总价: ¥<span id="total-amount">0</span></div>
+            </div>
+            
+            <div class="cart-items" id="cart-items">
+                <!-- 购物车项目将通过JavaScript动态添加 -->
+            </div>
+            
+            <div class="submit-section">
+                <button id="submit-order" class="submit-order">提交订单</button>
+                <p>所有商品均免费供应，无需支付任何费用</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 免费点餐系统 | 所有商品免费享用</p>
+        </footer>
+    </div>
+
+    <script>
+        // 商品数据
+        const dishes = [
+            {
+                id: 1,
+                name: "炭火烤肠",
+                description: "选用优质猪肉，炭火慢烤，外焦里嫩",
+                price: 0,
+                image: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='180' viewBox='0 0 200 180'%3E%3Crect fill='%23f39c12' width='200' height='180'/%3E%3Cellipse fill='%23e74c3c' cx='100' cy='120' rx='80' ry='30'/%3E%3Cellipse fill='%23c0392b' cx='100' cy='100' rx='70' ry='40'/%3E%3C/svg%3E"
+            },
+            {
+                id: 2,
+                name: "冰淇淋圣代",
+                description: "新鲜奶油制作的冰淇淋，搭配美味浇头",
+                price: 0,
+                image: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='180' viewBox='0 0 200 180'%3E%3Crect fill='%233498db' width='200' height='180'/%3E%3Cellipse fill='%23ffffff' cx='100' cy='90' rx='60' ry='50'/%3E%3Cpath fill='%239b59b6' d='M80 85 Q100 55 120 85 L80 85'/%3E%3Cellipse fill='%23e74c3c' cx='100' cy='85' rx='10' ry='5'/%3E%3C/svg%3E"
+            },
+            {
+                id: 3,
+                name: "特调鸡尾酒",
+                description: "新鲜水果特调的无酒精鸡尾酒，清凉解渴",
+                price: 0,
+                image: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='180' viewBox='0 0 200 180'%3E%3Crect fill='%232ecc71' width='200' height='180'/%3E%3Cpath fill='%23ffffff' d='M80 50 L120 50 L115 140 L85 140 Z'/%3E%3Cellipse fill='%239b59b6' cx='100' cy='45' rx='20' ry='10'/%3E%3Cellipse fill='%23e74c3c' cx='100' cy='55' rx='15' ry='5'/%3E%3C/svg%3E"
+            }
+        ];
+
+        let cart = [];
+        
+        // 初始化页面
+        function initPage() {
+            renderMenu();
+            updateCartUI();
+            
+            // 添加提交订单事件监听
+            document.getElementById('submit-order').addEventListener('click', submitOrder);
+        }
+        
+        // 渲染菜单
+        function renderMenu() {
+            const menuSection = document.getElementById('menu-section');
+            menuSection.innerHTML = '';
+            
+            dishes.forEach(dish => {
+                const dishCard = document.createElement('div');
+                dishCard.className = 'dish-card';
+                dishCard.innerHTML = `
+                    <div class="dish-image" style="background-image: url('${dish.image}')"></div>
+                    <div class="dish-info">
+                        <div class="dish-title">
+                            <div class="dish-name">${dish.name}</div>
+                            <div class="free-tag">免费</div>
+                        </div>
+                        <p class="dish-desc">${dish.description}</p>
+                        <button class="add-to-cart" onclick="addToCart(${dish.id})">加入购物车</button>
+                    </div>
+                `;
+                menuSection.appendChild(dishCard);
+            });
+        }
+        
+        // 添加到购物车
+        function addToCart(dishId) {
+            const dish = dishes.find(d => d.id === dishId);
+            if (!dish) return;
+            
+            // 检查是否已经在购物车中
+            const existingItem = cart.find(item => item.id === dish.id);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    id: dish.id,
+                    name: dish.name,
+                    price: dish.price,
+                    quantity: 1
+                });
+            }
+            
+            updateCartUI();
+        }
+        
+        // 更新购物车UI
+        function updateCartUI() {
+            const cartItemsEl = document.getElementById('cart-items');
+            const totalAmountEl = document.getElementById('total-amount');
+            
+            // 计算总价
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            totalAmountEl.textContent = total;
+            
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = `<div class="empty-cart-msg">您的购物车是空的，请选择商品添加</div>`;
+                return;
+            }
+            
+            cartItemsEl.innerHTML = '';
+            
+            cart.forEach((item, index) => {
+                const cartItemEl = document.createElement('div');
+                cartItemEl.className = 'cart-item';
+                cartItemEl.innerHTML = `
+                    <div class="item-name">${item.name} x ${item.quantity}</div>
+                    <div class="item-price">¥${item.price * item.quantity}</div>
+                    <button class="remove-item" onclick="removeFromCart(${index})">×</button>
+                `;
+                cartItemsEl.appendChild(cartItemEl);
+            });
+        }
+        
+        // 从购物车移除商品
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+        
+        // 提交订单
+        function submitOrder() {
+            if (cart.length === 0) {
+                alert('您的购物车是空的，请先添加商品');
+                return;
+            }
+            
+            // 在这里可以添加订单处理逻辑
+            // 例如发送到服务器或保存在本地
+            
+            // 生成订单摘要
+            let orderSummary = '您的订单已提交！\n\n包含以下商品：\n';
+            cart.forEach(item => {
+                orderSummary += `${item.name} x ${item.quantity}\n`;
+            });
+            
+            orderSummary += `\n总价：¥0\n感谢您的光临！`;
+            
+            alert(orderSummary);
+            
+            // 清空购物车
+            cart = [];
+            updateCartUI();
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
